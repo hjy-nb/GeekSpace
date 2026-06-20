@@ -5,13 +5,12 @@ import javax.crypto.SecretKey;
 import com.yao.geek.common.Constant.NumConstant;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * token生成
  */
 public class TokenCreate {
-    public static String createToken(Long id, List<String> authorities, SecretKey secretkey) {
+    public static String createToken(Long id, List<String>  authorities, SecretKey secretkey) {
         return  Jwts.builder()
                 .claim(NumConstant.T_ID,id)
                 .claim(NumConstant.T_AUTHORITY,authorities)

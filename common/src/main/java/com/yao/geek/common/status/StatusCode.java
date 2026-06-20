@@ -1,12 +1,14 @@
 package com.yao.geek.common.status;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 /**
  * 状态码
  */
+@Getter
 public enum StatusCode {
+    //登录错误
+    LOGIN_ERROR("401", "用户未登录"),
     //auth
     USERNAME_ERROR("10001", "用户名不存在"),
     PASSWORD_ERROR("10002", "密码错误"),
@@ -16,19 +18,12 @@ public enum StatusCode {
     CODE_ERROR("10006", "验证码错误"),
     CODE_GET_ERROR("10007", "获取验证码失败");
 
-    private String code;
-    private String message;
+    private final String code;
+    private final String message;
 
     StatusCode(String code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }

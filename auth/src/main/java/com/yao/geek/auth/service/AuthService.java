@@ -13,11 +13,14 @@ import com.yao.geek.auth.model.entity.UserRoleEntity;
 import com.yao.geek.auth.model.vo.LoginVo;
 import com.yao.geek.common.Constant.NumConstant;
 import com.yao.geek.common.exception.*;
+import com.yao.geek.common.log.GetLogger;
 import com.yao.geek.common.status.StatusCode;
 import com.yao.geek.common.token.SecretKeyCreate;
 import com.yao.geek.common.token.TokenCreate;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,8 @@ import java.util.List;
 //验证码还缺redis，注册时判断验证码也要redis
 @Service
 public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements UserIService{
+    private static final Logger B_LOGGER= GetLogger.getBusinessLogger();
+
     private final BCryptPasswordEncoder encoder;    // 密码加密
     private final UserRoleMapper userRoleMapper;
     @Value("${jwt.secret_key}")
@@ -149,6 +154,8 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
         response.setHeader("Cache-Control", "no-store,no-cache,must-revalidate");
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
+
+        B_LOGGER.info("生成验证码");
 
         ShearCaptcha shearCaptcha = CaptchaUtil.createShearCaptcha(100, 40, 4, 4);
         shearCaptcha.setGenerator(new RandomGenerator(NumConstant.CODE_RANGE,4));

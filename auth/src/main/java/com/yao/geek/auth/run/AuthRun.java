@@ -9,8 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication(scanBasePackages = "com.yao.geek.auth")
 @MapperScan(basePackages = "com.yao.geek.auth") // 自动扫描mapper接口不需要加mapper注解
-public class Run {
+public class AuthRun {
     public static void main(String[] args) {
-        SpringApplication.run(Run.class, args);
+        SpringApplication.run(AuthRun.class, args);
     }
 }

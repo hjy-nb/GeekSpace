@@ -1,5 +1,5 @@
 server:
-  port: 4458
+  port: 9991
 
 spring:
   application:
@@ -11,13 +11,13 @@ spring:
         username: nacos
         password: 695641275abcd
     gateway:
-      routes:
-          - id: auth
-            uri: lb://auth
-            predicates:
-              - Path=/auth/**
-            filters:
-              - StripPrefix=1
+      server:
+        webflux:
+           routes:
+           - id: auth
+             uri: lb://auth
+             predicates:
+               - Path=/geek/auth/**
 
 
 jwt:
