@@ -46,8 +46,6 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
     private final UserRoleMapper userRoleMapper;
     private final MapStructAuth mapper;
     private final FeignAuth feignAuth;
-    @Value("${jwt.secret_key}")
-    private String key;
 
     public AuthService(BCryptPasswordEncoder encoder, UserRoleMapper userRoleMapper, MapStructAuth mapper, FeignAuth feignAuth) {
         this.encoder = encoder;
@@ -80,7 +78,7 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
         B_LOGGER.info("最后登录时间已更新");
 
         List<String> authority = getBaseMapper().getAuthority(user.getId()); // 获取权限
-        SecretKey key = SecretKeyCreate.createSecretKey(this.key);  // 密钥
+        SecretKey key = SecretKeyCreate.createSecretKey();  // 密钥
         String token = TokenCreate.createToken(user.getId(), authority, key); // 生成token
 
         B_LOGGER.info("token生成成功");
@@ -138,15 +136,11 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
         B_LOGGER.info("用户默认角色已创建");
 
         //生成用户基本信息
-        boolean isSuccess =feignAuth.createDefaultUserDetail(user.getId());
-
-        if(!isSuccess){
-            throw new CreateDefaultDetailError(StatusCode.CREATE_DEFAULT_USER_ERROR);
-        }
+        feignAuth.createDefaultUserDetail(user.getId());
 
         B_LOGGER.info("用户基本信息生成成功");
 
-        SecretKey key = SecretKeyCreate.createSecretKey(this.key); // 密钥
+        SecretKey key = SecretKeyCreate.createSecretKey(); // 密钥
         List<String> authority = userRoleMapper.getAuthority(NumConstant.DEFAULT_ROLE_ID);  // 获取默认角色权限
         String token = TokenCreate.createToken(user.getId(), authority, key);
 
@@ -183,31 +177,21 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
 
         B_LOGGER.info("用户注销验证成功");
 
-        // 删除用户角色
-        int delete =userRoleMapper.delete(new LambdaQueryWrapper<UserRoleEntity>()
-                .eq(UserRoleEntity::getUserId, id));
+        //删除返回值一般是基于删除数据的个数的，不用判断是否成功，因为默认事务行为是加入到一个事务中，如果删除失败，事务都会回滚，所以这里不需要判断是否成功
 
-        if(delete==0){
-            throw new DeleteUserRoleError(StatusCode.DELETE_USER_ROLE_ERROR);
-        }
+        // 删除用户角色
+        userRoleMapper.delete(new LambdaQueryWrapper<UserRoleEntity>()
+                .eq(UserRoleEntity::getUserId, id));
 
         B_LOGGER.info("用户角色已删除");
 
         //删除用户信息
-        boolean isSuccess =feignAuth.deleteUserDetail(id);
-
-        if(!isSuccess){
-            throw new DeleteUserDetailError(StatusCode.DELETE_USER_DETAIL_ERROR);
-        }
+        feignAuth.deleteUserDetail(id);
 
         B_LOGGER.info("用户信息已删除");
 
         // 删除用户关注信息
-        boolean isDelete =feignAuth.deleteAttention(id);
-
-        if(!isDelete){
-            throw new DeleteUserAttentionError(StatusCode.DELETE_USER_ATTENTION_ERROR);
-        }
+        feignAuth.deleteAttention(id);
 
         B_LOGGER.info("用户关注信息已删除");
 

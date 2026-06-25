@@ -1,0 +1,3 @@
+12:22:41.075 [http-nio-9990-exec-2] INFO  BUSINESS - 用户请求注册,用户名：hjy
+12:22:41.337 [http-nio-9990-exec-2] INFO  BUSINESS - 用户注册信息已保存,用户名：hjy
+12:22:41.343 [http-nio-9990-exec-2] INFO  BUSINESS - 用户默认角色已创建

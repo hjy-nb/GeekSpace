@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class UserAttentionEntity {
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
     @TableField("follower_id")
     private Long attentionId;

@@ -1,5 +1,6 @@
 package com.yao.geek.user.service.fan;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yao.geek.common.exception.HaveAttention;
 import com.yao.geek.common.exception.NoAttention;
@@ -51,17 +52,17 @@ public class UserAttentionIService extends ServiceImpl<UserAttentionMapper, User
 
         B_LOGGER.info("取消关注,attentionId:{},beAttentionId:{}", attentionId, beAttentionId);
 
-        return remove(lambdaQuery()
+        return  remove(Wrappers.lambdaQuery(UserAttentionEntity.class)
                 .eq(UserAttentionEntity::getAttentionId, attentionId)
                 .eq(UserAttentionEntity::getBeAttentionId, beAttentionId));
     }
 
     //删除用户所有关注信息
     @Transactional
-    public boolean deleteUserAttention(Long attentionId) {
+    public void deleteUserAttention(Long attentionId) {
         B_LOGGER.info("删除用户所有关注信息,attentionId:{}", attentionId);
 
-        return remove(lambdaQuery()
+        remove(Wrappers.lambdaQuery(UserAttentionEntity.class)
                 .eq(UserAttentionEntity::getAttentionId, attentionId));
     }
 
@@ -70,7 +71,7 @@ public class UserAttentionIService extends ServiceImpl<UserAttentionMapper, User
         B_LOGGER.info("获取关注列表,attentionId:{}", attentionId);
 
         //先获取关注的id
-        List<Long> beAttentionIdList = lambdaQuery()
+        List<Long> ids = lambdaQuery()
                 .eq(UserAttentionEntity::getAttentionId, attentionId)
                 .select(UserAttentionEntity::getBeAttentionId)
                 .list()    //为空返回一个空集合
@@ -80,13 +81,13 @@ public class UserAttentionIService extends ServiceImpl<UserAttentionMapper, User
 
         B_LOGGER.info("获取关注列表");
 
-        if(beAttentionIdList.isEmpty()){
+        if(ids.isEmpty()){
             B_LOGGER.info("关注列表为空");
 
             return List.of();
         }
 
-        return feignAuth.getUserBaseDetail(beAttentionIdList);
+        return feignAuth.getUserBaseDetail(ids);
     }
 
     //获取粉丝列表，应该分页

@@ -27,6 +27,3 @@ mybatis-plus:
         logic-delete-field: status
         logic-delete-value: 0
         logic-not-delete-value: 1
-
-jwt:
-  secret_key: secret

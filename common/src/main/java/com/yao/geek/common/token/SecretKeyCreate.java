@@ -1,5 +1,6 @@
 package com.yao.geek.common.token;
 
+import com.yao.geek.common.Constant.NumConstant;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
@@ -8,7 +9,7 @@ import javax.crypto.SecretKey;
  * 密钥生成
  */
 public class SecretKeyCreate {
-    public static SecretKey createSecretKey(String key) {
-        return Keys.hmacShaKeyFor(key.getBytes());
+    public static SecretKey createSecretKey() {
+        return Keys.hmacShaKeyFor(NumConstant.T_CONTENT.getBytes());
     }
 }

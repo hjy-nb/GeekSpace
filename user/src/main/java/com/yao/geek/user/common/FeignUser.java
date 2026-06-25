@@ -1,8 +1,10 @@
 package com.yao.geek.user.common;
 
 import com.yao.geek.user.model.vo.UserBaseDetailVo;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -15,5 +17,5 @@ public interface FeignUser {
 
     //查询用户基本信息
     @GetMapping("/userbase")
-    List<UserBaseDetailVo> getUserBaseDetail(List<Long> ids);
+    List<UserBaseDetailVo> getUserBaseDetail(@RequestParam(value = "ids") @NotNull List<Long> ids);
 }

@@ -22,7 +22,3 @@ spring:
              uri: lb://user
              predicates:
                - Path=/geek/user/**
-
-
-jwt:
-  secret_key: secret

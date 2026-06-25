@@ -60,20 +60,20 @@ public class UserDetailService extends ServiceImpl<UserDetailMapper, UserDetailE
 
     //创建默认用户信息
     @Transactional
-    public boolean createDefaultUserDetail(Long id) {
+    public void createDefaultUserDetail(Long id) {
         B_LOGGER.info("创建默认用户信息,id:{}",id);
 
-        return save(UserDetailEntity.builder()
+        save(UserDetailEntity.builder()
                 .id(id)
                 .build());
     }
 
     //删除用户信息
     @Transactional
-    public boolean deleteUserDetail(Long id) {
+    public void deleteUserDetail(Long id) {
         B_LOGGER.info("删除用户信息,id:{}",id);
 
-        return removeById(id);
+        removeById(id);
     }
 
     //根据关注表看是否能获取其他用户信息

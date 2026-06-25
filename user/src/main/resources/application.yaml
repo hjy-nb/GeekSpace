@@ -21,12 +21,3 @@ feign:
         connect-timeout: 5000
         read-timeout: 5000
 
-mybatis-plus:
-  global-config:
-    db-config:
-      logic-delete-field: status
-      logic-delete-value: 0
-      logic-not-delete-value: 1
-
-jwt:
-  secret_key: secret

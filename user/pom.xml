@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.yao.geek.common</groupId>
             <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${moudle.version}</version>
             <scope>compile</scope>
         </dependency>
 

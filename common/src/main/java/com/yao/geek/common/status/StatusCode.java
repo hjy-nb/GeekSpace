@@ -26,7 +26,8 @@ public enum StatusCode {
     DELETE_USER_DETAIL_ERROR("20003", "删除用户信息失败"),
     DELETE_USER_ATTENTION_ERROR("20004", "删除用户所有关注失败"),
     NO_ATTENTION("20005", "用户未关注"),
-    HAVE_ATTENTION("20006", "用户已关注");
+    HAVE_ATTENTION("20006", "用户已关注"),
+    FIELD_TRANSFER_ERROR("20007", "字段转换异常");
     //
 
     private final String code;

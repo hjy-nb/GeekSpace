@@ -47,6 +47,7 @@ public class IController {
     @DeleteMapping("/logout")
     public Result<Void> logout(@Valid @RequestBody UserOutDto userOutDto, @RequestHeader(NumConstant.T_ID) Long id){
         authService.logout(userOutDto, id);
+
         return Result.ok(null);
     }
 
@@ -64,7 +65,7 @@ public class IController {
 
     // 用户基本信息查询
     @GetMapping("/userbase")
-    public List<UserBaseDetailVo> getUserBaseDetail(@NotNull List<Long> ids){
+    public List<UserBaseDetailVo> getUserBaseDetail(@RequestParam(value = "ids") @NotNull List<Long> ids){
         return authService.getUserBaseDetail(ids);
     }
 }

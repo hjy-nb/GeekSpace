@@ -25,13 +25,13 @@ public class UserAttentionController {
     }
     //关注用户
     @PostMapping("/attention")
-    public Result<Boolean> attentionUser(@RequestHeader(NumConstant.T_ID) Long attentionId, @RequestBody @NotNull Long beAttentionId) {
+    public Result<Boolean> attentionUser(@RequestHeader(NumConstant.T_ID) Long attentionId, @RequestParam("beAttentionId") @NotNull Long beAttentionId) {
         return Result.ok(userAttentionIService.attentionUser(attentionId, beAttentionId) );
     }
 
     //取消关注
     @DeleteMapping("/cancelAttention")
-    public Result<Boolean> cancelAttention(@RequestHeader(NumConstant.T_ID) Long attentionId, @RequestBody @NotNull Long beAttentionId) {
+    public Result<Boolean> cancelAttention(@RequestHeader(NumConstant.T_ID) Long attentionId, @RequestParam("beAttentionId") @NotNull Long beAttentionId) {
         return Result.ok(userAttentionIService.cancelAttention(attentionId, beAttentionId));
     }
 
@@ -49,7 +49,7 @@ public class UserAttentionController {
 
     //删除用户所有关注信息
     @DeleteMapping("/deleteAttention")
-    public Boolean deleteAttention(@RequestParam("id") @NotNull Long attentionId) {
-        return userAttentionIService.deleteUserAttention(attentionId);
+    public void deleteAttention(@RequestParam("id") @NotNull Long attentionId) {
+        userAttentionIService.deleteUserAttention(attentionId);
     }
 }

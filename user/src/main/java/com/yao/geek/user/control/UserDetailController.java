@@ -37,19 +37,19 @@ public class UserDetailController {
 
     //删除用户信息（只有注销的时候才能删除）
     @DeleteMapping("/deleteUser")
-    public Boolean deleteUserDetail(@RequestParam("id") @NotNull Long id){
-        return userDetailService.deleteUserDetail(id);
+    public void deleteUserDetail(@RequestParam("id") @NotNull Long id){
+        userDetailService.deleteUserDetail(id);
     }
 
     // 创建默认用户信息,不用认证
     @PostMapping("/createDefaultUser")
-    public Boolean createDefaultUserDetail(@RequestParam("id") @NotNull Long id){
-        return userDetailService.createDefaultUserDetail(id);
+    public void createDefaultUserDetail(@RequestParam("id") @NotNull Long id){
+        userDetailService.createDefaultUserDetail(id);
     }
 
     // 获取用户信息（获取别人的）
     @GetMapping("/getUserDetail")
-    public Result<UserDetailVo> getOtherUserDetail(@RequestHeader(NumConstant.T_ID) Long id, @RequestBody @NotNull Long userId){
+    public Result<UserDetailVo> getOtherUserDetail(@RequestHeader(NumConstant.T_ID) Long id, @RequestParam("userId") @NotNull Long userId){
         return Result.ok(userDetailService.getOtherUserDetail(id,userId));
     }
 }
