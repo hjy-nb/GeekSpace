@@ -3,6 +3,10 @@ package com.yao.geek.common.log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 提供logger
+ */
+
 public class GetLogger {
     private static final Logger SYSTEM_LOGGER = LoggerFactory.getLogger("SYSTEM");
 

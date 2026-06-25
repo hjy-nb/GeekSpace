@@ -3,14 +3,18 @@ package com.yao.geek.auth.model.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 注册
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RegisterDto {
     @NotBlank
     private String username;  // 用户名*

@@ -5,12 +5,16 @@ import cn.hutool.captcha.ShearCaptcha;
 import cn.hutool.captcha.generator.RandomGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yao.geek.auth.common.FeignAuth;
+import com.yao.geek.auth.common.MapStructAuth;
 import com.yao.geek.auth.model.dto.LoginDto;
 import com.yao.geek.auth.model.dto.RegisterDto;
 import com.yao.geek.auth.model.dto.UserOutDto;
 import com.yao.geek.auth.model.entity.UserEntity;
 import com.yao.geek.auth.model.entity.UserRoleEntity;
+import com.yao.geek.auth.model.query.NicknameQuery;
 import com.yao.geek.auth.model.vo.LoginVo;
+import com.yao.geek.auth.model.vo.UserBaseDetailVo;
 import com.yao.geek.common.Constant.NumConstant;
 import com.yao.geek.common.exception.*;
 import com.yao.geek.common.log.GetLogger;
@@ -20,10 +24,11 @@ import com.yao.geek.common.token.TokenCreate;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -39,16 +44,22 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
 
     private final BCryptPasswordEncoder encoder;    // 密码加密
     private final UserRoleMapper userRoleMapper;
+    private final MapStructAuth mapper;
+    private final FeignAuth feignAuth;
     @Value("${jwt.secret_key}")
     private String key;
 
-    public AuthService(BCryptPasswordEncoder encoder, UserRoleMapper userRoleMapper) {
+    public AuthService(BCryptPasswordEncoder encoder, UserRoleMapper userRoleMapper, MapStructAuth mapper, FeignAuth feignAuth) {
         this.encoder = encoder;
         this.userRoleMapper = userRoleMapper;
+        this.mapper = mapper;
+        this.feignAuth = feignAuth;
     }
 
     //用户登录
     public LoginVo login(LoginDto loginDto) {
+        B_LOGGER.info("用户请求登录,用户名：{}", loginDto.getUsername());
+
         UserEntity user= lambdaQuery().eq(UserEntity::getUsername, loginDto.getUsername())
                 .one();
 
@@ -60,13 +71,19 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
             throw new ErrorPassword(StatusCode.PASSWORD_ERROR);
         }
 
+        B_LOGGER.info("用户登录验证成功,userId:{}", user.getId());
+
         lambdaUpdate().eq(UserEntity::getId, user.getId())
                 .set(UserEntity::getLastLoginTime, LocalDateTime.now())
                 .update();
 
+        B_LOGGER.info("最后登录时间已更新");
+
         List<String> authority = getBaseMapper().getAuthority(user.getId()); // 获取权限
         SecretKey key = SecretKeyCreate.createSecretKey(this.key);  // 密钥
         String token = TokenCreate.createToken(user.getId(), authority, key); // 生成token
+
+        B_LOGGER.info("token生成成功");
 
         return LoginVo.builder()
                  .token(token)
@@ -76,6 +93,8 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
     //用户注册
     @Transactional
     public LoginVo register(RegisterDto registerDto) {
+        B_LOGGER.info("用户请求注册,用户名：{}", registerDto.getUsername());
+
         if(UsernameIsExist(registerDto.getUsername())){
             throw new ExistUsername(StatusCode.USERNAME_EXIST);
         }
@@ -100,13 +119,13 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
                 .phone(registerDto.getPhone())  // 手机号
                 .nickname(registerDto.getNickname())  // 昵称
                 .status(1)  // 状态
-                .createTime(LocalDateTime.now())  // 创建时间
                 .lastLoginTime(LocalDateTime.now())  // 最后登录时间
-                .updateTime(LocalDateTime.now())  // 更新时间
                 .avatar(NumConstant.DEFAULT_AVATAR_URL)
                 .build();
 
         save(user);    // 保存用户
+
+        B_LOGGER.info("用户注册信息已保存,用户名：{}", registerDto.getUsername());
 
         // 构建用户角色
         UserRoleEntity userRoleEntity = UserRoleEntity.builder()
@@ -116,18 +135,45 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
 
         userRoleMapper.insert(userRoleEntity); // 保存用户角色
 
+        B_LOGGER.info("用户默认角色已创建");
+
+        //生成用户基本信息
+        boolean isSuccess =feignAuth.createDefaultUserDetail(user.getId());
+
+        if(!isSuccess){
+            throw new CreateDefaultDetailError(StatusCode.CREATE_DEFAULT_USER_ERROR);
+        }
+
+        B_LOGGER.info("用户基本信息生成成功");
+
         SecretKey key = SecretKeyCreate.createSecretKey(this.key); // 密钥
         List<String> authority = userRoleMapper.getAuthority(NumConstant.DEFAULT_ROLE_ID);  // 获取默认角色权限
         String token = TokenCreate.createToken(user.getId(), authority, key);
+
+        B_LOGGER.info("token生成");
 
         return LoginVo.builder()
                 .token(token)
                 .build();
     }
 
+    //昵称查询(模糊匹配可用ELK),要分页
+    public List<UserBaseDetailVo> getUserIdByNickname(String nickname, NicknameQuery query) {
+        B_LOGGER.info("用户请求查询昵称,昵称：{}", nickname);
+
+        List<UserEntity> userDetailEntityList = lambdaQuery().like(UserEntity::getNickname, nickname)
+                .list();
+
+        return userDetailEntityList.stream()
+                .map(mapper::toUserBaseDetailVo)
+                .toList();
+    }
+
     //用户注销
     @Transactional
     public void logout(UserOutDto userOutDto,Long id) {
+        B_LOGGER.info("用户请求注销,用户id：{}", id);
+
         UserEntity user = lambdaQuery().eq(UserEntity::getId, id)
                 .one();
 
@@ -135,32 +181,77 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
             throw new ErrorPassword(StatusCode.PASSWORD_ERROR);
         }
 
+        B_LOGGER.info("用户注销验证成功");
+
         // 删除用户角色
-        userRoleMapper.delete(new LambdaQueryWrapper<UserRoleEntity>()
+        int delete =userRoleMapper.delete(new LambdaQueryWrapper<UserRoleEntity>()
                 .eq(UserRoleEntity::getUserId, id));
+
+        if(delete==0){
+            throw new DeleteUserRoleError(StatusCode.DELETE_USER_ROLE_ERROR);
+        }
+
+        B_LOGGER.info("用户角色已删除");
+
+        //删除用户信息
+        boolean isSuccess =feignAuth.deleteUserDetail(id);
+
+        if(!isSuccess){
+            throw new DeleteUserDetailError(StatusCode.DELETE_USER_DETAIL_ERROR);
+        }
+
+        B_LOGGER.info("用户信息已删除");
+
+        // 删除用户关注信息
+        boolean isDelete =feignAuth.deleteAttention(id);
+
+        if(!isDelete){
+            throw new DeleteUserAttentionError(StatusCode.DELETE_USER_ATTENTION_ERROR);
+        }
+
+        B_LOGGER.info("用户关注信息已删除");
 
         // 软删除用户
         lambdaUpdate().eq(UserEntity::getId, id)
                 .set(UserEntity::getStatus, 0)  // 状态禁用
                 .set(UserEntity::getUpdateTime, LocalDateTime.now()) // 更新时间
                 .update();
+
+        B_LOGGER.info("用户已删除");
     }
 
     //用户登出即判断token有没有过期，前端直接判断就行
 
+    //获取用户基本信息
+    public List<UserBaseDetailVo> getUserBaseDetail(List<Long> ids) {
+        B_LOGGER.info("用户请求获取用户基本信息");
+
+        List<UserEntity> userEntities = lambdaQuery()
+                .in(UserEntity::getId, ids)
+                .list();
+
+        return userEntities.stream()
+                .map(mapper::toUserBaseDetailVo)
+                .toList();
+    }
+
     //获取验证码
     public void getCode(HttpServletResponse response) throws IOException {
+        B_LOGGER.info("用户请求获取验证码");
+
         response.setContentType("image/png");
         response.setHeader("Cache-Control", "no-store,no-cache,must-revalidate");
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
 
-        B_LOGGER.info("生成验证码");
-
         ShearCaptcha shearCaptcha = CaptchaUtil.createShearCaptcha(100, 40, 4, 4);
         shearCaptcha.setGenerator(new RandomGenerator(NumConstant.CODE_RANGE,4));
 
+        B_LOGGER.info("验证码生成成功");
+
         String code = shearCaptcha.getCode();
+
+        // 保存验证码
 
         shearCaptcha.write(response.getOutputStream());
     }

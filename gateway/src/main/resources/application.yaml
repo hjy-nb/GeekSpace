@@ -18,6 +18,10 @@ spring:
              uri: lb://auth
              predicates:
                - Path=/geek/auth/**
+           - id: user
+             uri: lb://user
+             predicates:
+               - Path=/geek/user/**
 
 
 jwt:

@@ -63,6 +63,11 @@ public class Config implements WebMvcConfigurer {
                             response.setContentType("application/json");  // 返回json
                             response.setStatus(401);  // 状态码
                             response.getWriter().write("{\"code\":\"401\",\"message\":\"用户未登录\"}");  // 返回信息
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException)->{
+                            response.setContentType("application/json");
+                            response.setStatus(403); // 状态码
+                            response.getWriter().write("{\"code\":\"403\",\"message\":\"用户无权限\"}");
                         }));
 
         return http.build();
