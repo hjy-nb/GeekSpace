@@ -27,8 +27,16 @@ public enum StatusCode {
     DELETE_USER_ATTENTION_ERROR("20004", "删除用户所有关注失败"),
     NO_ATTENTION("20005", "用户未关注"),
     HAVE_ATTENTION("20006", "用户已关注"),
-    FIELD_TRANSFER_ERROR("20007", "字段转换异常");
-    //
+    FIELD_TRANSFER_ERROR("20007", "字段转换异常"),
+
+    //blog
+    ARTICLE_IS_NOT_ORIGINAL("30001", "文章不是原创"),
+    ARTICLE_EXIST("30002", "文章已存在"),
+    NULL_ARTICLE_CONTENT("30003", "文章内容为空"),
+    DOUBLE_PUBLISH("30004", "文章已发布"),
+    DOUBLE_PRIVATE("30005", "文章已设为私密"),
+    SHA256_ERROR("30006", "文章内容获取哈希值异常"),
+    ARTICLE_NOT_EXIST("30007", "文章不存在");
 
     private final String code;
     private final String message;

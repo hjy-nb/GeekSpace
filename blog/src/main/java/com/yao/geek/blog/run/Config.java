@@ -1,4 +1,4 @@
-package com.yao.geek.user.run;
+package com.yao.geek.blog.run;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +15,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class Config implements WebMvcConfigurer {
-    private final UserFilterConfig loginFilterConfig;
-    public Config(UserFilterConfig loginFilterConfig) {
+    private final BlogFilterConfig loginFilterConfig;
+    public Config(BlogFilterConfig loginFilterConfig) {
         this.loginFilterConfig = loginFilterConfig;
     }
     // 浏览器跨域同源配置
@@ -30,14 +30,11 @@ public class Config implements WebMvcConfigurer {
                 .maxAge(3600); // 缓存时间
     }
 
-
     // 安全过滤器链
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(AbstractHttpConfigurer::disable)  /// 禁用csrf
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("/geek/user/createDefaultUser")
-                        .permitAll()
                         .anyRequest()  // 其他请求都需要认证
                         .authenticated())
                 .logout(AbstractHttpConfigurer::disable)  // 禁用登出

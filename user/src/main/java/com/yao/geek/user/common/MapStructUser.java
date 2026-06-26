@@ -9,5 +9,5 @@ import org.mapstruct.Mapper;
  */
 @Mapper(componentModel = "spring")
 public interface MapStructUser {
-    public UserDetailVo toUserDetailVo(UserDetailEntity userDetailEntity);
+    UserDetailVo toUserDetailVo(UserDetailEntity userDetailEntity);
 }

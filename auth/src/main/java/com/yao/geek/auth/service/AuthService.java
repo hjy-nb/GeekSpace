@@ -84,8 +84,9 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
         B_LOGGER.info("token生成成功");
 
         return LoginVo.builder()
-                 .token(token)
-                 .build();
+                .userId(user.getId())
+                .token(token)
+                .build();
     }
 
     //用户注册
@@ -147,6 +148,7 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
         B_LOGGER.info("token生成");
 
         return LoginVo.builder()
+                .userId(user.getId())
                 .token(token)
                 .build();
     }
