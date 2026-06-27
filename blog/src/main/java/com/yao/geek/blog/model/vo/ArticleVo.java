@@ -6,6 +6,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * 文章vo
+ */
 @Data
 @Builder
 public class ArticleVo {

@@ -120,6 +120,14 @@
         <scope>compile</scope>
       </dependency>
 
+      <!--mybatis-plus-jsqlparser -->
+      <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-jsqlparser</artifactId>
+        <version>${mp.version}</version>
+        <scope>compile</scope>
+      </dependency>
+
       <!-- lombok -->
       <dependency>
         <groupId>org.projectlombok</groupId>

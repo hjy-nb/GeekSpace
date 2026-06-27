@@ -22,7 +22,7 @@ import java.util.Objects;
 public class GlobalExceptionHandle {
     private final static Logger E_LOGGER = GetLogger.getErrorLogger();
     @ExceptionHandler(FuException.class)
-    public Result<?> handleException(FuException e) {
+    public Result<Void> handleException(FuException e) {
         E_LOGGER.error("异常：{}", e.getMessage());
 
         return Result.error(e.getCode(), e.getMessage());
@@ -30,30 +30,38 @@ public class GlobalExceptionHandle {
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Result<?> handleException(MethodArgumentNotValidException e) {
+    public Result<Void> handleException(MethodArgumentNotValidException e) {
         E_LOGGER.error("字段校验异常：{}", e.getMessage());
 
         return Result.error(StatusCode.FIELD_ERROR.getCode(), Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public Result<?> handleException(ConstraintViolationException e) {
+    public Result<Void> handleException(ConstraintViolationException e) {
         E_LOGGER.error("字段校验异常 ：{}", e.getMessage());
 
         return Result.error(StatusCode.FIELD_ERROR.getCode(), Objects.requireNonNull(e.getConstraintViolations().stream().findFirst().orElse(null)).getMessage());
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public Result<?> handleException(MissingServletRequestParameterException e) {
+    public Result<Void> handleException(MissingServletRequestParameterException e) {
         E_LOGGER.error("字段转换异常 ：{}", e.getMessage());
 
         return Result.error(StatusCode.FIELD_TRANSFER_ERROR.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(NoSuchAlgorithmException.class)
-    public Result<?> handleException(NoSuchAlgorithmException e) {
+    public Result<Void> handleException(NoSuchAlgorithmException e) {
         E_LOGGER.error("文章内容获取哈希值异常 ：{}", e.getMessage());
 
         return Result.error(StatusCode.SHA256_ERROR);
+    }
+
+    //参数上不能指定排除异常
+    @ExceptionHandler(Exception.class)
+    public Result<Void> handleException(Exception e) {
+        E_LOGGER.error("异常：{}", e.getMessage());
+
+        return Result.error(StatusCode.UNKNOW_ERROR);
     }
 }

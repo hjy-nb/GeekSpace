@@ -3,6 +3,9 @@ package com.yao.geek.blog.model.vo;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * 文章内容vo
+ */
 @Data
 @Builder
 public class ArticleContentVo {

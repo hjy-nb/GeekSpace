@@ -31,8 +31,10 @@ public class UserDetailController {
 
     // 更新用户信息
     @PutMapping("/updateUser")
-    public Result<Boolean> updateUserDetail(@RequestHeader(NumConstant.T_ID) Long id, @Valid @RequestBody UserDetailDto userDetailDto){
-        return Result.ok(userDetailService.updateUserDetail(id, userDetailDto));
+    public Result<Void> updateUserDetail(@RequestHeader(NumConstant.T_ID) Long id, @Valid @RequestBody UserDetailDto userDetailDto){
+        userDetailService.updateUserDetail(id, userDetailDto);
+
+        return Result.ok(null);
     }
 
     //删除用户信息（只有注销的时候才能删除）

@@ -1,9 +1,11 @@
 package com.yao.geek.auth.control;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yao.geek.auth.model.dto.LoginDto;
 import com.yao.geek.auth.model.dto.RegisterDto;
 import com.yao.geek.auth.model.dto.UserOutDto;
 import com.yao.geek.auth.model.query.NicknameQuery;
+import com.yao.geek.auth.model.query.UserQuery;
 import com.yao.geek.auth.model.result.Result;
 import com.yao.geek.auth.model.vo.LoginVo;
 import com.yao.geek.auth.model.vo.UserBaseDetailVo;
@@ -12,6 +14,7 @@ import com.yao.geek.common.Constant.NumConstant;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -59,13 +62,13 @@ public class IController {
 
     // 昵称模糊查询
     @GetMapping("/nickname")
-    public Result<List<UserBaseDetailVo>> getUserIdByNickname(@RequestBody @NotBlank String nickname, @ModelAttribute @Valid NicknameQuery query){
-        return Result.ok(authService.getUserIdByNickname(nickname, query));
+    public Result<Page<UserBaseDetailVo>> getUserIdByNickname(@ModelAttribute @Valid NicknameQuery query){
+        return Result.ok(authService.getUserIdByNickname(query));
     }
 
     // 用户基本信息查询
     @GetMapping("/userbase")
-    public List<UserBaseDetailVo> getUserBaseDetail(@RequestParam(value = "ids") @NotNull List<Long> ids){
-        return authService.getUserBaseDetail(ids);
+    public Page<UserBaseDetailVo> getUserBaseDetail(@RequestParam(value = "ids") @NotNull @NotEmpty List<Long> ids, @ModelAttribute @Valid UserQuery query){
+        return authService.getUserBaseDetail(ids, query);
     }
 }

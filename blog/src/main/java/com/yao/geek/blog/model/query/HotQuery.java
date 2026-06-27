@@ -7,22 +7,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
- * 组合查询Query
+ * 热门查询Query
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArticleQuery {
-    private String title;    // 标题
-    private Long categoryId;        // 分类ID
-    private List<Long> tagIds;        // 标签ID列表
+public class HotQuery {
     @Min(1)
     private Integer page=1;  // 初始页码页码
     @Min(1)
-    @Max(100)
-    private Integer size=10;  // 每页大小
+    @Max(20)
+    private Integer size=5;  // 每页大小
 }

@@ -22,7 +22,6 @@ public class ArticleCreateDto {
     private String coverImage;      // 封面图片
     @NotNull
     private Long categoryId;        // 分类ID
-    private Boolean isTop=false;    // 是否置顶 0:否 1:是
     @NotNull
     private Boolean isOriginal;     // 是否原创 0:转载 1:原创
     private String originalUrl;     // 原文链接

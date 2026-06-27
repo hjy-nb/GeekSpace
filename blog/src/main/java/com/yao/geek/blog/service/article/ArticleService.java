@@ -1,27 +1,30 @@
 package com.yao.geek.blog.service.article;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yao.geek.blog.common.MapStructBlog;
 import com.yao.geek.blog.model.dto.ArticleCreateDto;
 import com.yao.geek.blog.model.dto.ArticleUpdateDto;
 import com.yao.geek.blog.model.entity.ArticleEntity;
 import com.yao.geek.blog.model.query.ArticleQuery;
+import com.yao.geek.blog.model.query.HotQuery;
+import com.yao.geek.blog.model.query.Query;
 import com.yao.geek.blog.model.status.Status;
 import com.yao.geek.blog.model.vo.ArticleConditionVo;
 import com.yao.geek.blog.model.vo.ArticleVo;
 import com.yao.geek.blog.service.article.content.ArticleContentService;
+import com.yao.geek.blog.service.category.CategoryService;
 import com.yao.geek.blog.service.tag.articletag.ArticleTagService;
 import com.yao.geek.common.exception.ArticleIsNotOriginal;
 import com.yao.geek.common.exception.ArticleNotExist;
+import com.yao.geek.common.exception.CateGoryNotExist;
 import com.yao.geek.common.log.GetLogger;
 import com.yao.geek.common.status.StatusCode;
 import org.slf4j.Logger;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -36,18 +39,26 @@ public class ArticleService extends ServiceImpl<ArticleMapper, ArticleEntity> im
     private final MapStructBlog mapStructBlog;
     private final ArticleContentService articleContentService;
     private final ArticleTagService articleTagService;
+    private final ArticleMapper articleMapper;
+    private final CategoryService categoryService;
 
-    public ArticleService(MapStructBlog mapStructBlog, ArticleContentService articleContentService,ArticleTagService articleTagService) {
+    public ArticleService(MapStructBlog mapStructBlog, ArticleContentService articleContentService
+             ,ArticleTagService articleTagService,ArticleMapper articleMapper, CategoryService categoryService) {
         this.mapStructBlog = mapStructBlog;
         this.articleContentService = articleContentService;
         this.articleTagService = articleTagService;
-
+        this.articleMapper = articleMapper;
+        this.categoryService = categoryService;
     }
 
     //创建新文章
     @Transactional
     public Long createNewArticle(ArticleCreateDto articleCreateDto, Long userId) {
         B_LOGGER.info("创建新文章,文章标题:{} userId:{}", articleCreateDto.getTitle(), userId);
+
+        if(categoryService.isNotCategoryExist(articleCreateDto.getCategoryId())){
+            throw new CateGoryNotExist(StatusCode.CATEGORY_NOT_EXIST);
+        }
 
         ArticleEntity articleEntity = mapStructBlog.toArticleEntity(articleCreateDto, userId);
 
@@ -95,6 +106,19 @@ public class ArticleService extends ServiceImpl<ArticleMapper, ArticleEntity> im
         } else if(Objects.equals(status, Status.ARTICLE_PRIVATE.getCode())){
             B_LOGGER.info("文章设为私密成功");
         }
+    }
+
+    //获取文章状态
+    public Integer getArticleStatus(Long articleId){
+        B_LOGGER.info("获取文章状态,articleId:{}", articleId);
+
+        ArticleEntity articleEntity = getById(articleId);
+
+        if(articleEntity==null){
+            throw new ArticleNotExist(StatusCode.ARTICLE_NOT_EXIST);
+        }
+
+        return articleEntity.getStatus();
     }
 
     //修改文章元数据
@@ -160,6 +184,19 @@ public class ArticleService extends ServiceImpl<ArticleMapper, ArticleEntity> im
         B_LOGGER.info("文章阅读数修改成功");
     }
 
+    //获取阅读数
+    public Integer getArticleViewCount(Long articleId){
+        B_LOGGER.info("获取文章阅读数,articleId:{}", articleId);
+
+        ArticleEntity articleEntity = getById(articleId);
+
+        if(articleEntity==null){
+            throw new ArticleNotExist(StatusCode.ARTICLE_NOT_EXIST);
+        }
+
+        return articleEntity.getViewCount();
+    }
+
     //修改点赞数(最终一致)
     @Transactional
     public void updateArticleLikeCount(Long articleId, Integer likeCount) {
@@ -174,6 +211,19 @@ public class ArticleService extends ServiceImpl<ArticleMapper, ArticleEntity> im
                 .update();
 
         B_LOGGER.info("文章点赞数修改成功");
+    }
+
+    //获取点赞数
+    public Integer getArticleLikeCount(Long articleId){
+        B_LOGGER.info("获取文章点赞数,articleId:{}", articleId);
+
+        ArticleEntity articleEntity = getById(articleId);
+
+        if(articleEntity==null){
+            throw new ArticleNotExist(StatusCode.ARTICLE_NOT_EXIST);
+        }
+
+        return articleEntity.getLikeCount();
     }
 
     //修改评论数(最终一致)
@@ -192,6 +242,19 @@ public class ArticleService extends ServiceImpl<ArticleMapper, ArticleEntity> im
         B_LOGGER.info("文章评论数修改成功");
     }
 
+    //获取评论数
+    public Integer getArticleCommentCount(Long articleId){
+        B_LOGGER.info("获取文章评论数,articleId:{}", articleId);
+
+        ArticleEntity articleEntity = getById(articleId);
+
+        if(articleEntity==null){
+            throw new ArticleNotExist(StatusCode.ARTICLE_NOT_EXIST);
+        }
+
+        return articleEntity.getCommentCount();
+    }
+
     //修改分享数(最终一致)
     @Transactional
     public void updateArticleShareCount(Long articleId, Integer shareCount) {
@@ -206,6 +269,19 @@ public class ArticleService extends ServiceImpl<ArticleMapper, ArticleEntity> im
                 .update();
 
         B_LOGGER.info("文章分享数修改成功");
+    }
+
+    //获取分享数
+    public Integer getArticleShareCount(Long articleId){
+        B_LOGGER.info("获取文章分享数,articleId:{}", articleId);
+
+        ArticleEntity articleEntity = getById(articleId);
+
+        if(articleEntity==null){
+            throw new ArticleNotExist(StatusCode.ARTICLE_NOT_EXIST);
+        }
+
+        return articleEntity.getShareCount();
     }
 
     //修改置顶状态
@@ -229,6 +305,19 @@ public class ArticleService extends ServiceImpl<ArticleMapper, ArticleEntity> im
         }
     }
 
+    //获取置顶状态
+    public Boolean getArticleTopStatus(Long articleId){
+        B_LOGGER.info("获取文章置顶状态,articleId:{}", articleId);
+
+        ArticleEntity articleEntity = getById(articleId);
+
+        if(articleEntity==null){
+            throw new ArticleNotExist(StatusCode.ARTICLE_NOT_EXIST);
+        }
+
+        return articleEntity.getIsTop();
+    }
+
     //获取文章元数据
     public ArticleVo getArticleMetadata(Long articleId) {
         B_LOGGER.info("获取文章元数据,articleId:{}", articleId);
@@ -243,10 +332,34 @@ public class ArticleService extends ServiceImpl<ArticleMapper, ArticleEntity> im
     }
 
     //条件查询文章
-    public List<ArticleConditionVo> getArticleList(ArticleQuery articleQuery){
+    public Page<ArticleConditionVo> getArticleList(ArticleQuery articleQuery){
         B_LOGGER.info("条件查询文章");
 
-        List<ArticleEntity> articleEntities=lambdaQuery().
+        Page<ArticleConditionVo> page=new Page<>(articleQuery.getPage(), articleQuery.getSize());
+
+        return articleMapper.getArticleList(page,articleQuery);
+    }
+
+    //查看热点文章
+    public Page<ArticleConditionVo> getHotArticleList(HotQuery hotQuery){
+        B_LOGGER.info("查看热点文章");
+
+        Page<ArticleConditionVo> page=new Page<>(hotQuery.getPage(), hotQuery.getSize());
+
+        return articleMapper.getHotArticleList(page);
+    }
+
+    //查看分类下所有文章
+    public Page<ArticleConditionVo> getArticleListByCategory(Long categoryId, Query query){
+        B_LOGGER.info("查看分类下所有文章,categoryId:{}", categoryId);
+
+        if(categoryService.isNotCategoryExist(categoryId)){
+            throw new CateGoryNotExist(StatusCode.CATEGORY_NOT_EXIST);
+        }
+
+        Page<ArticleConditionVo> page=new Page<>(query.getPage(), query.getSize());
+
+        return articleMapper.getArticleListByCategory(page,categoryId);
     }
 
     //判断是否为原创

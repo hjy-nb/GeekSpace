@@ -12,8 +12,11 @@ public enum Status {
     ARTICLE_DRAFT(0,"文章草稿"),
     ARTICLE_PRIVATE(2,"文章私密"),
     ARTICLE_TOP(3,"文章置顶"),
-    ARTICLE_NO_TOP(4,"文章取消置顶");
+    ARTICLE_NO_TOP(4,"文章取消置顶"),
 
+    //category
+    CATEGORY_HIDDEN(0,"分类隐藏"),
+    CATEGORY_DISPLAY(1,"分类显示");
 
 
     private final Integer code;

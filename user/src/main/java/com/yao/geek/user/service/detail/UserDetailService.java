@@ -40,21 +40,21 @@ public class UserDetailService extends ServiceImpl<UserDetailMapper, UserDetailE
 
     //更新用户信息
     @Transactional
-    public boolean updateUserDetail(Long id,UserDetailDto userDetailVoDto) {
+    public void updateUserDetail(Long id,UserDetailDto userDetailVoDto) {
         B_LOGGER.info("更新用户信息,id:{}",id);
 
-        return lambdaUpdate()
+        lambdaUpdate()
                 .eq(UserDetailEntity::getId, id)
-                .set(userDetailVoDto.getRealName()!=null, UserDetailEntity::getRealName, userDetailVoDto.getRealName())  // 真实姓名
-                .set(userDetailVoDto.getBirthday()!=null, UserDetailEntity::getBirthday, userDetailVoDto.getBirthday())  // 生日
-                .set(userDetailVoDto.getLocation()!=null, UserDetailEntity::getLocation, userDetailVoDto.getLocation())  // 所在地
-                .set(userDetailVoDto.getCompany()!=null, UserDetailEntity::getCompany, userDetailVoDto.getCompany())  // 公司
-                .set(userDetailVoDto.getPosition()!=null, UserDetailEntity::getPosition, userDetailVoDto.getPosition())  // 职位
-                .set(userDetailVoDto.getWebsite()!=null, UserDetailEntity::getWebsite, userDetailVoDto.getWebsite())  // 个人网站
-                .set(userDetailVoDto.getGithub()!=null, UserDetailEntity::getGithub, userDetailVoDto.getGithub())  // GitHub账户
-                .set(userDetailVoDto.getWeibo()!=null, UserDetailEntity::getWeibo, userDetailVoDto.getWeibo())  // 微博账户
-                .set(userDetailVoDto.getBio()!=null, UserDetailEntity::getBio, userDetailVoDto.getBio())  // 个人简介
-                .set(userDetailVoDto.getSkills()!=null, UserDetailEntity::getSkills, userDetailVoDto.getSkills())  // 技能标签
+                .set(userDetailVoDto.getRealName() != null, UserDetailEntity::getRealName, userDetailVoDto.getRealName())  // 真实姓名
+                .set(userDetailVoDto.getBirthday() != null, UserDetailEntity::getBirthday, userDetailVoDto.getBirthday())  // 生日
+                .set(userDetailVoDto.getLocation() != null, UserDetailEntity::getLocation, userDetailVoDto.getLocation())  // 所在地
+                .set(userDetailVoDto.getCompany() != null, UserDetailEntity::getCompany, userDetailVoDto.getCompany())  // 公司
+                .set(userDetailVoDto.getPosition() != null, UserDetailEntity::getPosition, userDetailVoDto.getPosition())  // 职位
+                .set(userDetailVoDto.getWebsite() != null, UserDetailEntity::getWebsite, userDetailVoDto.getWebsite())  // 个人网站
+                .set(userDetailVoDto.getGithub() != null, UserDetailEntity::getGithub, userDetailVoDto.getGithub())  // GitHub账户
+                .set(userDetailVoDto.getWeibo() != null, UserDetailEntity::getWeibo, userDetailVoDto.getWeibo())  // 微博账户
+                .set(userDetailVoDto.getBio() != null, UserDetailEntity::getBio, userDetailVoDto.getBio())  // 个人简介
+                .set(userDetailVoDto.getSkills() != null, UserDetailEntity::getSkills, userDetailVoDto.getSkills())  // 技能标签
                 .update();
     }
 

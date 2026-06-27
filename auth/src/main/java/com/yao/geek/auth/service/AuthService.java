@@ -4,6 +4,7 @@ import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.ShearCaptcha;
 import cn.hutool.captcha.generator.RandomGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yao.geek.auth.common.FeignAuth;
 import com.yao.geek.auth.common.MapStructAuth;
@@ -13,6 +14,7 @@ import com.yao.geek.auth.model.dto.UserOutDto;
 import com.yao.geek.auth.model.entity.UserEntity;
 import com.yao.geek.auth.model.entity.UserRoleEntity;
 import com.yao.geek.auth.model.query.NicknameQuery;
+import com.yao.geek.auth.model.query.UserQuery;
 import com.yao.geek.auth.model.vo.LoginVo;
 import com.yao.geek.auth.model.vo.UserBaseDetailVo;
 import com.yao.geek.common.Constant.NumConstant;
@@ -46,12 +48,15 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
     private final UserRoleMapper userRoleMapper;
     private final MapStructAuth mapper;
     private final FeignAuth feignAuth;
+    private final UserMapper userMapper;
 
-    public AuthService(BCryptPasswordEncoder encoder, UserRoleMapper userRoleMapper, MapStructAuth mapper, FeignAuth feignAuth) {
+    public AuthService(BCryptPasswordEncoder encoder, UserRoleMapper userRoleMapper, MapStructAuth mapper,
+                       FeignAuth feignAuth,UserMapper userMapper) {
         this.encoder = encoder;
         this.userRoleMapper = userRoleMapper;
         this.mapper = mapper;
         this.feignAuth = feignAuth;
+        this.userMapper = userMapper;
     }
 
     //用户登录
@@ -77,7 +82,7 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
 
         B_LOGGER.info("最后登录时间已更新");
 
-        List<String> authority = getBaseMapper().getAuthority(user.getId()); // 获取权限
+        List<String> authority = userMapper.getAuthority(user.getId()); // 获取权限
         SecretKey key = SecretKeyCreate.createSecretKey();  // 密钥
         String token = TokenCreate.createToken(user.getId(), authority, key); // 生成token
 
@@ -154,15 +159,12 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
     }
 
     //昵称查询(模糊匹配可用ELK),要分页
-    public List<UserBaseDetailVo> getUserIdByNickname(String nickname, NicknameQuery query) {
-        B_LOGGER.info("用户请求查询昵称,昵称：{}", nickname);
+    public Page<UserBaseDetailVo> getUserIdByNickname(NicknameQuery query) {
+        B_LOGGER.info("用户请求查询昵称,昵称：{}", query.getNickname());
 
-        List<UserEntity> userDetailEntityList = lambdaQuery().like(UserEntity::getNickname, nickname)
-                .list();
+        Page<UserBaseDetailVo> page=new Page<>(query.getPage(), query.getSize());
 
-        return userDetailEntityList.stream()
-                .map(mapper::toUserBaseDetailVo)
-                .toList();
+        return userMapper.getUserIdByNickname(page, query.getNickname());
     }
 
     //用户注销
@@ -208,17 +210,13 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
 
     //用户登出即判断token有没有过期，前端直接判断就行
 
-    //获取用户基本信息
-    public List<UserBaseDetailVo> getUserBaseDetail(List<Long> ids) {
+    //批量获取用户基本信息
+    public Page<UserBaseDetailVo> getUserBaseDetail(List<Long> ids, UserQuery query) {
         B_LOGGER.info("用户请求获取用户基本信息");
 
-        List<UserEntity> userEntities = lambdaQuery()
-                .in(UserEntity::getId, ids)
-                .list();
+        Page<UserBaseDetailVo> page = new Page<>(query.getPage(), query.getSize());
 
-        return userEntities.stream()
-                .map(mapper::toUserBaseDetailVo)
-                .toList();
+        return userMapper.getUserBaseDetail(page, ids);
     }
 
     //获取验证码

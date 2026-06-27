@@ -1,5 +1,8 @@
 package com.yao.geek.blog.run;
 
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +22,17 @@ public class Config implements WebMvcConfigurer {
     public Config(BlogFilterConfig loginFilterConfig) {
         this.loginFilterConfig = loginFilterConfig;
     }
+
+    //mp分页组件
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+
+        return interceptor;
+    }
+
     // 浏览器跨域同源配置
     @Override
     public void addCorsMappings(CorsRegistry registry) {
