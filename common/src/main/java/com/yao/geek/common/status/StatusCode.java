@@ -44,7 +44,11 @@ public enum StatusCode {
     ARTICLE_ID_NULL("30010", "文章ID为空"),
     TAG_ID_NULL("30011", "标签ID为空"),
     CATEGORY_NOT_EXIST("30012", "分类不存在"),
-    CATEGORY_EXIST("30013", "分类已存在");
+    CATEGORY_EXIST("30013", "分类已存在"),
+
+    //comment
+    COMMENT_NOT_EXIST("40001", "评论不存在"),
+    USER_NOT_EXIST("40002", "用户不存在");
 
     private final String code;
     private final String message;

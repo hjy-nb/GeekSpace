@@ -376,6 +376,7 @@ public class ArticleService extends ServiceImpl<ArticleMapper, ArticleEntity> im
     public boolean isNotArticleExist(Long articleId) {
         return !lambdaQuery()
                 .eq(ArticleEntity::getId, articleId)
+                .eq(ArticleEntity::getStatus, Status.ARTICLE_PUBLISH.getCode())
                 .exists();
     }
 }

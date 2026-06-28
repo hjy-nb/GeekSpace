@@ -1,11 +1,10 @@
 package com.yao.geek.user.common;
 
-import com.yao.geek.common.Constant.NumConstant;
+import com.yao.geek.common.constant.NumConstant;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 

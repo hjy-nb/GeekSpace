@@ -1,6 +1,6 @@
 package com.yao.geek.blog.run;
 
-import com.yao.geek.common.Constant.NumConstant;
+import com.yao.geek.common.constant.NumConstant;
 import com.yao.geek.common.log.GetLogger;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;

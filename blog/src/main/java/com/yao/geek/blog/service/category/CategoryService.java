@@ -210,11 +210,13 @@ public class CategoryService extends ServiceImpl<CategoryMapper, CategoryEntity>
     //判断分类是否存在
     public boolean isNotCategoryExist(Long id){
         return !lambdaQuery().eq(CategoryEntity::getId, id)
+                .eq(CategoryEntity::getIsVisible,Status.CATEGORY_DISPLAY.getCode())
                 .exists();
     }
 
     public boolean isNotCategoryExist(String name){
         return !lambdaQuery().eq(CategoryEntity::getName, name)
+                .eq(CategoryEntity::getIsVisible,Status.CATEGORY_DISPLAY.getCode())
                 .exists();
     }
 }

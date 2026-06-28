@@ -3,14 +3,18 @@ package com.yao.geek.auth.model.query;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 用户昵称查询参数
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NicknameQuery {
     @Min(1)
     @Max(100)

@@ -1,4 +1,4 @@
-package com.yao.geek.common.Constant;
+package com.yao.geek.common.constant;
 
 /**
  * 存放要用到常量

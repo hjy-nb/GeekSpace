@@ -1,7 +1,7 @@
 package com.yao.geek.user.control;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yao.geek.common.Constant.NumConstant;
+import com.yao.geek.common.constant.NumConstant;
 import com.yao.geek.user.model.query.UserQuery;
 import com.yao.geek.user.model.result.Result;
 import com.yao.geek.user.model.vo.UserBaseDetailVo;
@@ -10,8 +10,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 用户关注控制类

@@ -1,6 +1,6 @@
 package com.yao.geek.common.token;
 
-import com.yao.geek.common.Constant.NumConstant;
+import com.yao.geek.common.constant.NumConstant;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;

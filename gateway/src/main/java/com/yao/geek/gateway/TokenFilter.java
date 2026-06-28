@@ -1,6 +1,6 @@
 package com.yao.geek.gateway;
 
-import com.yao.geek.common.Constant.NumConstant;
+import com.yao.geek.common.constant.NumConstant;
 import com.yao.geek.common.token.SecretKeyCreate;
 import com.yao.geek.common.token.TokenParser;
 import io.jsonwebtoken.Claims;

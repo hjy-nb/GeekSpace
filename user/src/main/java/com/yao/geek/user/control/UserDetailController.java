@@ -1,6 +1,6 @@
 package com.yao.geek.user.control;
 
-import com.yao.geek.common.Constant.NumConstant;
+import com.yao.geek.common.constant.NumConstant;
 import com.yao.geek.user.model.dto.UserDetailDto;
 import com.yao.geek.user.model.result.Result;
 import com.yao.geek.user.model.vo.UserDetailVo;

@@ -10,10 +10,9 @@ import com.yao.geek.auth.model.result.Result;
 import com.yao.geek.auth.model.vo.LoginVo;
 import com.yao.geek.auth.model.vo.UserBaseDetailVo;
 import com.yao.geek.auth.service.AuthService;
-import com.yao.geek.common.Constant.NumConstant;
+import com.yao.geek.common.constant.NumConstant;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
@@ -70,5 +69,11 @@ public class IController {
     @GetMapping("/userbase")
     public Page<UserBaseDetailVo> getUserBaseDetail(@RequestParam(value = "ids") @NotNull @NotEmpty List<Long> ids, @ModelAttribute @Valid UserQuery query){
         return authService.getUserBaseDetail(ids, query);
+    }
+
+    //判断用户是否存在
+    @GetMapping("/exist")
+    public Boolean UserIsNotExist(@RequestParam("id") @NotNull Long id){
+        return authService.UserIsNotExist(id);
     }
 }

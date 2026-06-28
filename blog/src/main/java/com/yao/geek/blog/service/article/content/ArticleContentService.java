@@ -1,6 +1,7 @@
 package com.yao.geek.blog.service.article.content;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.houbb.sensitive.word.bs.SensitiveWordBs;
 import com.yao.geek.blog.common.MapStructBlog;
 import com.yao.geek.blog.model.dto.ArticleContentUpdateDto;
 import com.yao.geek.blog.model.entity.ArticleContentEntity;
@@ -27,6 +28,7 @@ public class ArticleContentService extends ServiceImpl<ArticleContentMapper, Art
 
     private final ArticleService articleService;
     private final MapStructBlog mapStructBlog;
+    private final SensitiveWordBs sensitiveWordBs = SensitiveWordBs.newInstance();
 
     public ArticleContentService(ArticleService articleService, MapStructBlog mapStructBlog) {
         this.articleService = articleService;
@@ -41,7 +43,7 @@ public class ArticleContentService extends ServiceImpl<ArticleContentMapper, Art
                 .build());
     }
 
-    //修改文章内容
+    //修改文章内容(判断是否包含敏感词)
     @Transactional
     public void updateArticleContent(ArticleContentUpdateDto articleContentUpdateDto) throws NoSuchAlgorithmException{
         B_LOGGER.info("修改文章内容,articleId:{}", articleContentUpdateDto.getId());
@@ -52,6 +54,12 @@ public class ArticleContentService extends ServiceImpl<ArticleContentMapper, Art
 
         if(!articleService.isOriginal(articleContentUpdateDto.getId())){
             throw new ArticleIsNotOriginal(StatusCode.ARTICLE_IS_NOT_ORIGINAL);
+        }
+
+        if(sensitiveWordBs.contains(articleContentUpdateDto.getContent())){
+            B_LOGGER.info("文章内容包含敏感词待审核,{}", articleContentUpdateDto.getId());
+
+            //审核，审核完才能修改
         }
 
         B_LOGGER.info("获取文章内容的哈希值");
@@ -68,6 +76,8 @@ public class ArticleContentService extends ServiceImpl<ArticleContentMapper, Art
                 .set(articleContentUpdateDto.getMarkdownContent()!=null,ArticleContentEntity::getMarkdownContent, articleContentUpdateDto.getMarkdownContent())
                 .set(ArticleContentEntity::getWordCount, articleContentUpdateDto.getContent().length())
                 .update();
+
+        B_LOGGER.info("修改文章内容成功,articleId:{}", articleContentUpdateDto.getId());
     }
 
     //删除文章内容

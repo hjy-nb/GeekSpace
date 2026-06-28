@@ -37,6 +37,7 @@
     <hutool.version>5.8.46</hutool.version>
     <bouncycastle.version>1.84</bouncycastle.version>
     <lang3.version>3.20.0</lang3.version>
+    <sensitive-word.version>0.29.5</sensitive-word.version>
   </properties>
 
   <dependencyManagement>
@@ -165,6 +166,14 @@
         <groupId>cn.hutool</groupId>
         <artifactId>hutool-all</artifactId>
         <version>${hutool.version}</version>
+        <scope>compile</scope>
+      </dependency>
+
+      <!-- sensitive-word -->
+      <dependency>
+        <groupId>com.github.houbb</groupId>
+        <artifactId>sensitive-word</artifactId>
+        <version>${sensitive-word.version}</version>
         <scope>compile</scope>
       </dependency>
     </dependencies>

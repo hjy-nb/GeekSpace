@@ -2,7 +2,7 @@ package com.yao.geek.common.token;
 
 import io.jsonwebtoken.Jwts;
 import javax.crypto.SecretKey;
-import com.yao.geek.common.Constant.NumConstant;
+import com.yao.geek.common.constant.NumConstant;
 import java.util.Date;
 import java.util.List;
 

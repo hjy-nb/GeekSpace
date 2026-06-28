@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yao.geek.auth.common.FeignAuth;
-import com.yao.geek.auth.common.MapStructAuth;
 import com.yao.geek.auth.model.dto.LoginDto;
 import com.yao.geek.auth.model.dto.RegisterDto;
 import com.yao.geek.auth.model.dto.UserOutDto;
@@ -17,7 +16,7 @@ import com.yao.geek.auth.model.query.NicknameQuery;
 import com.yao.geek.auth.model.query.UserQuery;
 import com.yao.geek.auth.model.vo.LoginVo;
 import com.yao.geek.auth.model.vo.UserBaseDetailVo;
-import com.yao.geek.common.Constant.NumConstant;
+import com.yao.geek.common.constant.NumConstant;
 import com.yao.geek.common.exception.*;
 import com.yao.geek.common.log.GetLogger;
 import com.yao.geek.common.status.StatusCode;
@@ -25,11 +24,9 @@ import com.yao.geek.common.token.SecretKeyCreate;
 import com.yao.geek.common.token.TokenCreate;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
@@ -46,15 +43,13 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
 
     private final BCryptPasswordEncoder encoder;    // 密码加密
     private final UserRoleMapper userRoleMapper;
-    private final MapStructAuth mapper;
     private final FeignAuth feignAuth;
     private final UserMapper userMapper;
 
-    public AuthService(BCryptPasswordEncoder encoder, UserRoleMapper userRoleMapper, MapStructAuth mapper,
+    public AuthService(BCryptPasswordEncoder encoder, UserRoleMapper userRoleMapper,
                        FeignAuth feignAuth,UserMapper userMapper) {
         this.encoder = encoder;
         this.userRoleMapper = userRoleMapper;
-        this.mapper = mapper;
         this.feignAuth = feignAuth;
         this.userMapper = userMapper;
     }
@@ -238,6 +233,12 @@ public class AuthService extends ServiceImpl<UserMapper,UserEntity> implements U
         // 保存验证码
 
         shearCaptcha.write(response.getOutputStream());
+    }
+
+    //判断用户是否存在
+    public boolean UserIsNotExist(Long id) {
+        return !lambdaQuery().eq(UserEntity::getId, id)
+                .exists();
     }
 
     //判断用户名是否存在

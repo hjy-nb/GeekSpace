@@ -13,7 +13,7 @@ import com.yao.geek.blog.model.vo.ArticleContentVo;
 import com.yao.geek.blog.model.vo.ArticleVo;
 import com.yao.geek.blog.service.article.ArticleService;
 import com.yao.geek.blog.service.article.content.ArticleContentService;
-import com.yao.geek.common.Constant.NumConstant;
+import com.yao.geek.common.constant.NumConstant;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -187,5 +187,11 @@ public class ArticleController {
     @GetMapping("/getArticleListByCategory")
     public Page<ArticleConditionVo> getArticleListByCategory(@RequestParam("categoryId") @NotNull Long categoryId,@ModelAttribute @Valid Query query){
         return articleService.getArticleListByCategory(categoryId,query);
+    }
+
+    //判断文章存不存在
+    @GetMapping("/isArticleExist")
+    public Boolean isNotArticleExist(@RequestParam("id") @NotNull Long articleId){
+        return articleService.isNotArticleExist(articleId);
     }
 }
